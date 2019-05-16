@@ -60,7 +60,7 @@ class NoteEditViewController: UIViewController {
     }
     
     @objc func share() {
-        let vc = UIActivityViewController(activityItems: [model.text], applicationActivities: [])
+        let vc = UIActivityViewController(activityItems: [model.text], applicationActivities: nil)
         present(vc, animated: true, completion: nil)
     }
 

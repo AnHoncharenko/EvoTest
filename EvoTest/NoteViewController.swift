@@ -10,32 +10,30 @@ import UIKit
 import RealmSwift
 
 class NoteViewController: UIViewController {
-    
     @IBOutlet weak var tableView: UITableView!
     let realm = try! Realm()
     var data: Results<NoteModel>!
-  
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         data = realm.objects(NoteModel.self).sorted(byKeyPath: "date", ascending: false)
         title = "Заметки"
         tableView.dataSource = self
         tableView.delegate = self
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50
-        let rightButtonItem = UIBarButtonItem(title: "+", style: .done, target: self, action: #selector(addNoteAction))
+        let rightButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addNoteAction))
         self.navigationItem.rightBarButtonItem = rightButtonItem
     }
     
     @objc func addNoteAction() {
         let model = NoteModel()
-        NoteEditViewController.show(on: self, model: model, operation: .add, saveAction: { [weak self] text in
-            try! self?.realm.write {
+        NoteEditViewController.show(on: self, model: model, operation: .add, saveAction: { text in
+            try! self.realm.write {
                 model.text = text
-                self?.realm.add(model)
+                self.realm.add(model)
             }
-            self?.tableView.reloadData()
+            self.tableView.reloadData()
         })
     }
     
@@ -68,7 +66,7 @@ extension NoteViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        NoteEditViewController.show(on: self, model: data[indexPath.row], operation: .read, saveAction: { [weak self] _ in })
+        NoteEditViewController.show(on: self, model: data[indexPath.row], operation: .read, saveAction: { _ in })
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
@@ -78,11 +76,11 @@ extension NoteViewController: UITableViewDelegate {
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
         let edit = UITableViewRowAction(style: .normal, title: "Edit") { (action, indexPath) in
-            NoteEditViewController.show(on: self, model: model, operation: .edit, saveAction: { [weak self] text in
-                try! self?.realm.write {
+            NoteEditViewController.show(on: self, model: model, operation: .edit, saveAction: { text in
+                try! self.realm.write {
                     model.text = text
                 }
-                self?.tableView.reloadData()
+                self.tableView.reloadData()
             })
         }
         edit.backgroundColor = UIColor.blue
